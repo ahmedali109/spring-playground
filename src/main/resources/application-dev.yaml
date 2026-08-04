@@ -1,7 +1,22 @@
 spring:
   config:
     activate:
-      on-profile:
-        - dev
+      on-profile: dev
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/booting_db
+    username: postgres
+    password: postgres
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+
+  sql:
+    init:
+      mode: always
+
 server:
   port: 8081

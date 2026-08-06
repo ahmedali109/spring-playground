@@ -2,9 +2,12 @@ package org.example.booting.auth.controllers;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.booting.auth.dto.request.LoginRequest;
 import org.example.booting.auth.dto.request.SignupRequest;
+import org.example.booting.auth.dto.response.LoginResponse;
+import org.example.booting.auth.dto.response.LogoutResponse;
 import org.example.booting.auth.dto.response.SignupResponse;
 import org.example.booting.auth.dto.response.UserResponse;
 import org.example.booting.auth.service.AuthService;
@@ -41,28 +44,23 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
-        String token = authService.login(loginRequest);
-        Cookie cookie = new Cookie("token", token);
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response){
+        LoginResponse loginResponse = authService.login(loginRequest);
+        Cookie cookie = new Cookie("token", loginResponse.token());
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60 * 24);
         response.addCookie(cookie);
-        return ResponseEntity.ok("Loggin in");
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response){
-
+    public ResponseEntity<LogoutResponse> logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("token", "");
-
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(0);
-
         response.addCookie(cookie);
-
-        return ResponseEntity.status(HttpStatus.OK).body("User Logged out successfully");
+        return ResponseEntity.ok(new LogoutResponse("User logged out successfully"));
     }
-
 }

@@ -18,5 +18,10 @@ spring:
     init:
       mode: always
 
+jwt:
+  secret: 019fd714-bbdc-728e-8db5-dbff94be4e49
+  accessExpiration: 900000
+  refreshExpiration: 604800000
+
 server:
   port: 8081

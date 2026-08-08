@@ -16,10 +16,17 @@ spring:
   sql:
     init:
       mode: always
+
   data:
     redis:
       host: localhost
       port: 6379
+
+  ldap:
+    urls: ldap://localhost:389
+    base: dc=example,dc=com
+    username: cn=admin,dc=example,dc=com
+    password: admin
 
 jwt:
   secret: 019fd714-bbdc-728e-8db5-dbff94be4e49

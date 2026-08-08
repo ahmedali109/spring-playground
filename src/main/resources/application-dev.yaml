@@ -13,10 +13,13 @@ spring:
       ddl-auto: none
     show-sql: true
 
-
   sql:
     init:
       mode: always
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 jwt:
   secret: 019fd714-bbdc-728e-8db5-dbff94be4e49

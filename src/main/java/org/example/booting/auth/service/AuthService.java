@@ -9,9 +9,10 @@ import org.example.booting.auth.user.User;
 import org.example.booting.auth.user.UserRepository;
 import org.example.booting.exceptions.EmailAlreadyExistsException;
 import org.example.booting.exceptions.InvalidCredentialsException;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final RedisSessionService redisSessionService;
 
     public User signup(SignupRequest signupRequest){
         if (userRepository.findByEmail(signupRequest.email()).isPresent()) {
@@ -38,10 +40,11 @@ public class AuthService {
         )){
             throw new InvalidCredentialsException();
         }
-        UserResponse userResponse = new UserResponse(
-                user.getId(),
-                user.getEmail()
-        );
-        return new LoginResponse("user logged in successfully" , userResponse  , jwtService.generateAccessToken(user));
+        UserResponse userResponse = new UserResponse(user.getId(), user.getEmail());
+        String sessionID = UUID.randomUUID().toString();
+        redisSessionService.save(user.getId() , sessionID);
+        String accessToken = jwtService.generateAccessToken(user.getId() , sessionID);
+        String refreshToken = jwtService.generateRefreshToken(user.getId() , sessionID);
+        return new LoginResponse("user logged in successfully" , userResponse , accessToken , refreshToken);
     }
 }
